@@ -5,16 +5,72 @@
 // - Use fetch() to retrieve data from the OpenWeather API
 // - Handle the API response and parse the JSON
 // - Log the data to the console for testing
+function fetchWeatherData(city){
+   const key = "348eceb05c8b6496bebb91faf859d407"; 
+   fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}&units=metric`)
 
-// Step 2: Display Weather Data on the Page
-// - Create a function `displayWeather(data)`
-// - Dynamically update the DOM with weather details (e.g., temperature, humidity, weather description)
-// - Ensure the function can handle the data format provided by the API
+    .then(response =>{
+        if (!response.ok){
+            displayError('Network response was not ok');
+            throw new Error('Network response was not ok');
+        
+        }
+        console.log("has response");
+        return response.json();
+    })
+    .then(data => {
+        console.log('Weather Data',data);
+        displayWeather(data);
+    })
+.catch(error =>{
+    console.error('Fetch error;', error);
 
-// Step 3: Handle User Input
-// - Add an event listener to the button to capture user input
-// - Retrieve the value from the input field
-// - Call `fetchWeatherData(city)` with the user-provided city name
+})}
+function displayWeather(data){
+    const weatherContainer = document.getElementById('weather-display');
+    debugger;
+    weatherContainer.innerHTML = "";
+    const city = data.name || 'Unknown city';
+    const country = data?.sys?.country || 'N/A';
+    const temperature = data?.main?.humidity ?? 'N/A';
+    const humidity = data?. main?.humidity ?? 'N/A';
+    const description = data?.weather?.[0]?.description || 'N/A';
+    const windSpeed = data?.wind?.speed ?? 'N/A';
+    
+    const content = `
+    <h2>Weather in ${city}, ${country}</h2>
+    <ul>
+    <li>Temperature: ${temperature} C</li>
+    <li>Humidity: ${humidity}%</li>
+    <li>Description: ${capitilizeFirstLetter(description)}</li>
+    <li>Wind Speed: ${windSpeed} m/s</li>
+    </ul>
+        `;
+    
+        weatherContainer.innerHTML = content;
+}
+function capitilizeFirstLetter(text){
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+const fetchBtn = document.getElementById('fetch-weather');
+const cityInput = document.getElementById('city-input');
+fetchBtn.addEventListener('click', () => {
+    //debugger;
+    const city = cityInput.value.trim(); 
+    if (!city){
+        displayError('Please enter a city name.');
+        return;
+    }
+    fetchWeatherData(city);
+
+});
+function displayError(message){
+    const errorElement = document.getElementById('error-message');
+    errorElement.textContent = message;
+    errorElement.classList.add('error');
+    
+
+}
 
 // Step 4: Implement Error Handling
 // - Create a function `displayError(message)`

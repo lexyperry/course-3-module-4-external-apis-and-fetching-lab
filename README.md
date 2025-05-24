@@ -73,7 +73,6 @@ function displayError(message) {
   errorElement.textContent = message;
   errorElement.classList.add('error');
 }
-```
 
 ## Resources
 
